@@ -1,62 +1,27 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3001/api'; // Replace with your backend API URL
+const API_BASE_URL = 'http://localhost:3001/api'; 
+
+const makeApiRequest = async (method, endpoint, data = null) => {
+  try {
+    const response = await axios[method](`${API_BASE_URL}/${endpoint}`, data);
+    return response.data;
+  } catch (error) {
+    console.error(`Error ${method === 'get' ? 'fetching' : 'creating'} ${endpoint}:`, error);
+    throw error;
+  }
+};
 
 const apiService = {
-  // Fetch all tasks
-  getAllTasks: async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/tasks`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching tasks:', error);
-      throw error;
-    }
-  },
+  getAllTasks: async () => makeApiRequest('get', 'tasks'),
 
-  // Create a new task
-  createTask: async (newTask) => {
-    try {
-      const response = await axios.post(`${API_BASE_URL}/tasks`, newTask);
-      return response.data;
-    } catch (error) {
-      console.error('Error creating task:', error);
-      throw error;
-    }
-  },
+  createTask: async (newTask) => makeApiRequest('post', 'tasks', newTask),
 
-  // Fetch all projects
-  getAllProjects: async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/projects`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching projects:', error);
-      throw error;
-    }
-  },
+  getAllProjects: async () => makeApiRequest('get', 'projects'),
 
-  // Create a new project
-  createProject: async (newProject) => {
-    try {
-      const response = await axios.post(`${API_BASE_URL}/projects`, newProject);
-      return response.data;
-    } catch (error) {
-      console.error('Error creating project:', error);
-      throw error;
-    }
-  },
+  createProject: async (newProject) => makeApiRequest('post', 'projects', newProject),
 
-  // Fetch all users
-  getAllUsers: async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/users`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      throw error;
-    }
-  },
+  getAllUsers: async () => makeApiRequest('get', 'users'),
 };
 
 export default apiService;
