@@ -1,64 +1,39 @@
 const User = require('../../models/user');
 
+const handleUserOperation = async (operation, action, req, res) => {
+  try {
+    const result = await User[operation](...action);
+    if (!result) {
+      res.status(404).json({ error: `User not found for ${operation}` });
+    } else {
+      res.json(result);
+    }
+  } catch (err) {
+    res.status(500).json({ error: `Error ${action.length > 1 ? 'updating' : 'fetching'} user` });
+  }
+};
 
 // Create a new user
 exports.createUser = async (req, res) => {
-  try {
-    const newUser = await User.create(req.body);
-    res.json(newUser);
-  } catch (err) {
-    res.status(500).json({ error: 'Error creating user' });
-  }
+  await handleUserOperation('create', [req.body], req, res);
 };
 
 // Get all users
 exports.getAllUsers = async (req, res) => {
-  try {
-    const users = await User.find();
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ error: 'Error fetching users' });
-  }
+  await handleUserOperation('find', [], req, res);
 };
 
 // Get a specific user by ID
 exports.getUserById = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.userId);
-    if (!user) {
-      res.status(404).json({ error: 'User not found' });
-    } else {
-      res.json(user);
-    }
-  } catch (err) {
-    res.status(500).json({ error: 'Error fetching user' });
-  }
+  await handleUserOperation('findById', [req.params.userId], req, res);
 };
 
 // Update a user by ID
 exports.updateUserById = async (req, res) => {
-  try {
-    const updatedUser = await User.findByIdAndUpdate(req.params.userId, req.body, { new: true });
-    if (!updatedUser) {
-      res.status(404).json({ error: 'User not found' });
-    } else {
-      res.json(updatedUser);
-    }
-  } catch (err) {
-    res.status(500).json({ error: 'Error updating user' });
-  }
+  await handleUserOperation('findByIdAndUpdate', [req.params.userId, req.body, { new: true }], req, res);
 };
 
 // Delete a user by ID
 exports.deleteUserById = async (req, res) => {
-  try {
-    const deletedUser = await User.findByIdAndDelete(req.params.userId);
-    if (!deletedUser) {
-      res.status(404).json({ error: 'User not found' });
-    } else {
-      res.json(deletedUser);
-    }
-  } catch (err) {
-    res.status(500).json({ error: 'Error deleting user' });
-  }
+  await handleUserOperation('findByIdAndDelete', [req.params.userId], req, res);
 };
