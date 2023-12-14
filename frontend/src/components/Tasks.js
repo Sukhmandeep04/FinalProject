@@ -2,43 +2,48 @@ import React, { useState, useEffect } from 'react';
 import TaskForm from './TaskForm';
 import axios from 'axios';
 
-const Tasks = ({ userRole }) => {
+const useFetchTasks = () => {
   const [tasks, setTasks] = useState([]);
 
-  // Fetch tasks from the backend when the component mounts
   useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/tasks');
+        setTasks(response.data);
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
+      }
+    };
+
     fetchTasks();
   }, []);
 
-  const fetchTasks = async () => {
-    try {
-      const response = await axios.get('http://localhost:3001/tasks');
-      setTasks(response.data);
-    } catch (error) {
-      console.error('Error fetching tasks:', error);
+  return [tasks, setTasks];
+};
+
+const sendToBackend = async (taskData) => {
+  try {
+    const response = await axios.post('http://your-backend-api/tasks', taskData);
+
+    if (response.status === 201) {
+      console.log('Task data sent to the backend successfully.');
+    } else {
+      console.error('Failed to send task data to the backend.');
     }
-  };
+  } catch (error) {
+    console.error('Error sending task data to the backend:', error);
+  }
+};
+
+const Tasks = ({ userRole }) => {
+  const [tasks, setTasks] = useFetchTasks();
 
   const handleTaskSubmit = async (newTask) => {
     // Add the new task to the tasks array
-    setTasks([...tasks, newTask]);
+    setTasks((prevTasks) => [...prevTasks, newTask]);
 
     // Send the new task data to your backend for storage
     sendToBackend(newTask);
-  };
-
-  const sendToBackend = async (taskData) => {
-    try {
-      const response = await axios.post('http://your-backend-api/tasks', taskData);
-
-      if (response.status === 201) {
-        console.log('Task data sent to the backend successfully.');
-      } else {
-        console.error('Failed to send task data to the backend.');
-      }
-    } catch (error) {
-      console.error('Error sending task data to the backend:', error);
-    }
   };
 
   return (
