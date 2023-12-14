@@ -1,5 +1,6 @@
 📓 FINAL PROJECT
 
+<a href="https://codeclimate.com/github/Sukhmandeep04/FinalProject/maintainability"><img src="https://api.codeclimate.com/v1/badges/e0255ddb215b5521d5a6/maintainability" /></a>
 
 📕Overview
 The Task Management System is a web application designed to assist users in managing tasks and projects efficiently. The project is organized into different directories and files to maintain a structured codebase.
