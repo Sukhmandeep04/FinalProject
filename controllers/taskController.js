@@ -1,63 +1,34 @@
 const Task = require('../../models/task');
 
-// Create a new task
+const handleOperation = async (model, operation, action, req, res) => {
+  try {
+    const result = await model[operation](...action);
+    if (!result) {
+      res.status(404).json({ error: `${model.modelName} not found for ${operation}` });
+    } else {
+      res.json(result);
+    }
+  } catch (err) {
+    res.status(500).json({ error: `Error ${action.length > 1 ? 'updating' : 'fetching'} ${model.modelName}` });
+  }
+};
+
 exports.createTask = async (req, res) => {
-  try {
-    const newTask = await Task.create(req.body);
-    res.json(newTask);
-  } catch (err) {
-    res.status(500).json({ error: 'Error creating task' });
-  }
+  await handleOperation(Task, 'create', [req.body], req, res);
 };
 
-// Get all tasks
 exports.getAllTasks = async (req, res) => {
-  try {
-    const tasks = await Task.find();
-    res.json(tasks);
-  } catch (err) {
-    res.status(500).json({ error: 'Error fetching tasks' });
-  }
+  await handleOperation(Task, 'find', [], req, res);
 };
 
-// Get a specific task by ID
 exports.getTaskById = async (req, res) => {
-  try {
-    const task = await Task.findById(req.params.taskId);
-    if (!task) {
-      res.status(404).json({ error: 'Task not found' });
-    } else {
-      res.json(task);
-    }
-  } catch (err) {
-    res.status(500).json({ error: 'Error fetching task' });
-  }
+  await handleOperation(Task, 'findById', [req.params.taskId], req, res);
 };
 
-// Update a task by ID
 exports.updateTaskById = async (req, res) => {
-  try {
-    const updatedTask = await Task.findByIdAndUpdate(req.params.taskId, req.body, { new: true });
-    if (!updatedTask) {
-      res.status(404).json({ error: 'Task not found' });
-    } else {
-      res.json(updatedTask);
-    }
-  } catch (err) {
-    res.status(500).json({ error: 'Error updating task' });
-  }
+  await handleOperation(Task, 'findByIdAndUpdate', [req.params.taskId, req.body, { new: true }], req, res);
 };
 
-// Delete a task by ID
 exports.deleteTaskById = async (req, res) => {
-  try {
-    const deletedTask = await Task.findByIdAndDelete(req.params.taskId);
-    if (!deletedTask) {
-      res.status(404).json({ error: 'Task not found' });
-    } else {
-      res.json(deletedTask);
-    }
-  } catch (err) {
-    res.status(500).json({ error: 'Error deleting task' });
-  }
+  await handleOperation(Task, 'findByIdAndDelete', [req.params.taskId], req, res);
 };
